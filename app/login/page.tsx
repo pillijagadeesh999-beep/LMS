@@ -1,49 +1,6 @@
 "use client";
-
-import { FormEvent, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-import Link from "next/link";
-
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
-
-export default function LoginPage() {
-  const [mode, setMode] = useState<"login" | "signup">("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setLoading(true); setError(""); setMessage("");
-    if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setError(error.message); else window.location.href = "/dashboard";
-    } else {
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) setError(error.message);
-      else if (data.session) window.location.href = "/dashboard";
-      else { setMessage("Account created. Check your email to confirm your account, then sign in."); setMode("login"); }
-    }
-    setLoading(false);
-  }
-
-  return <main className="container"><div className="form-card">
-    <Link href="/">← SkillArc</Link>
-    <h2>{mode === "login" ? "Sign in" : "Create account"}</h2>
-    <p>{mode === "login" ? "Use your LMS account to continue." : "Create a test account to explore the LMS."}</p>
-    <form onSubmit={submit}>
-      <label htmlFor="email">Email</label><input id="email" type="email" required value={email} onChange={e=>setEmail(e.target.value)}/>
-      <label htmlFor="password">Password</label><input id="password" type="password" minLength={6} required value={password} onChange={e=>setPassword(e.target.value)}/>
-      {error && <div className="error">{error}</div>}
-      {message && <div className="error" style={{color:"#175c37",background:"#ecfdf3"}}>{message}</div>}
-      <button className="btn primary full" disabled={loading}>{loading ? "Please wait..." : mode === "login" ? "Sign in" : "Create account"}</button>
-    </form>
-    <p style={{marginTop:20,fontSize:14}}>{mode==="login"?"Don't have an account? ":"Already have an account? "}
-      <button type="button" onClick={()=>{setMode(mode==="login"?"signup":"login");setError("");setMessage("");}} style={{border:0,background:"none",color:"#2563eb",fontWeight:700,cursor:"pointer"}}>
-        {mode==="login"?"Create one":"Sign in"}
-      </button>
-    </p>
-  </div></main>;
-}
+import {FormEvent,useState} from "react";import {createClient} from "@supabase/supabase-js";import Link from "next/link";
+const supabase=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
+export default function LoginPage(){const[mode,setMode]=useState<"login"|"signup">("login");const[email,setEmail]=useState("");const[password,setPassword]=useState("");const[name,setName]=useState("");const[message,setMessage]=useState("");const[error,setError]=useState("");const[loading,setLoading]=useState(false);
+async function submit(e:FormEvent){e.preventDefault();setLoading(true);setError("");setMessage("");if(mode==="login"){const{error}=await supabase.auth.signInWithPassword({email,password});if(error)setError(error.message);else location.href="/dashboard"}else{const{data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name}}});if(error)setError(error.message);else if(data.session)location.href="/dashboard";else{setMessage("Account created. Check your email to confirm your account, then sign in.");setMode("login")}}setLoading(false)}
+return <main className="container"><div className="form-card"><Link href="/">← SkillArc</Link><h2>{mode==="login"?"Sign in":"Create account"}</h2><p>{mode==="login"?"Use your LMS account to continue.":"Create a test account to explore SkillArc."}</p><form onSubmit={submit}>{mode==="signup"&&<><label htmlFor="name">Full name</label><input id="name" value={name} onChange={e=>setName(e.target.value)} required placeholder="Your name"/></>}<label htmlFor="email">Email</label><input id="email" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/><label htmlFor="password">Password</label><input id="password" type="password" minLength={6} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 6 characters"/>{error&&<div className="error">{error}</div>}{message&&<div className="notice">{message}</div>}<button className="btn primary full" disabled={loading}>{loading?"Please wait...":mode==="login"?"Sign in":"Create account"}</button></form><p style={{marginTop:20,fontSize:14}}>{mode==="login"?"Don't have an account? ":"Already have an account? "}<button type="button" onClick={()=>{setMode(mode==="login"?"signup":"login");setError("");setMessage("")}} style={{border:0,background:"none",color:"#2563eb",fontWeight:700,cursor:"pointer"}}>{mode==="login"?"Create one":"Sign in"}</button></p></div></main>}
