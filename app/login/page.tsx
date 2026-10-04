@@ -1,0 +1,6 @@
+"use client";
+import {FormEvent,useState} from "react";
+import {createClient} from "@supabase/supabase-js";
+import Link from "next/link";
+const supabase=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
+export default function LoginPage(){const[email,setEmail]=useState("");const[password,setPassword]=useState("");const[error,setError]=useState("");const[loading,setLoading]=useState(false);async function signIn(e:FormEvent){e.preventDefault();setLoading(true);setError("");const{error}=await supabase.auth.signInWithPassword({email,password});if(error)setError(error.message);else window.location.href="/dashboard";setLoading(false)}return <main className="container"><div className="form-card"><Link href="/">← SkillArc</Link><h2>Sign in</h2><p>Use your LMS account to continue.</p><form onSubmit={signIn}><label htmlFor="email">Email</label><input id="email" type="email" required value={email} onChange={e=>setEmail(e.target.value)}/><label htmlFor="password">Password</label><input id="password" type="password" required value={password} onChange={e=>setPassword(e.target.value)}/>{error&&<div className="error">{error}</div>}<button className="btn primary full" disabled={loading}>{loading?"Signing in...":"Sign in"}</button></form></div></main>}
